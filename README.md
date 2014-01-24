@@ -11,3 +11,5 @@ loaders: [
   { test: /\.ejs/, loader: "template-html-loader?engine=ejs" }
 ]
 ````
+
+Available on NPM, `template-html-loader`.
