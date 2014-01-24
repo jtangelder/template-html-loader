@@ -1,5 +1,6 @@
 var cons = require('consolidate');
 var utils = require('loader-utils');
+var extname = require('path').extname;
 
 
 module.exports = function(content) {
@@ -12,12 +13,13 @@ module.exports = function(content) {
     callback(null, "module.exports = " + JSON.stringify(content));
   }
 
-  if(opt.engine == 'raw' || !opt.engine) {
-    return exportContent(content);
+  // with no engine given, use the file extension as engine
+  if(!opt.engine) {
+    opt.engine = extname(this.request).substr(1).toLowerCase();
   }
 
   if(!cons[opt.engine]) {
-    throw new Error("Engine "+ opt.engine +" isn't available in Consolidate.js");
+    throw new Error("Engine '"+ opt.engine +"' isn't available in Consolidate.js");
   }
 
   cons[opt.engine].render(content, opt, function(err, html) {
