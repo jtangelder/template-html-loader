@@ -22,11 +22,13 @@ module.exports = function(content) {
     throw new Error("Engine '"+ opt.engine +"' isn't available in Consolidate.js");
   }
 
+  // for relative includes
+  opt.filename = this.resourcePath;
+
   cons[opt.engine].render(content, opt, function(err, html) {
     if(err) {
       throw err;
     }
     exportContent(html);
   });
-
 };
