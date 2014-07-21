@@ -10,7 +10,11 @@ module.exports = function(content) {
   var opt = utils.parseQuery(this.query);
 
   function exportContent(content) {
-    callback(null, "module.exports = " + JSON.stringify(content));
+    if (opt.raw) {
+      callback(null, content);
+    } else {
+      callback(null, "module.exports = " + JSON.stringify(content));
+    }
   }
 
   // with no engine given, use the file extension as engine
