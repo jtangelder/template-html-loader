@@ -13,7 +13,12 @@ module.exports = function(content) {
     if (opt.raw) {
       callback(null, content);
     } else {
-      callback(null, "module.exports = " + JSON.stringify(content));
+      content = "module.exports = " + JSON.stringify(content)
+      content = content.replace(
+        /__WEBPACK_TEMPLATE_HTML_LOADER__\(([^\)]+)\)/g,
+        '" + require("$1") + "'
+      )
+      callback(null, content);
     }
   }
 
@@ -28,6 +33,9 @@ module.exports = function(content) {
 
   // for relative includes
   opt.filename = this.resourcePath;
+  opt.require = function(path) {
+    return "__WEBPACK_TEMPLATE_HTML_LOADER__("+path+")"
+  }
 
   cons[opt.engine].render(content, opt, function(err, html) {
     if(err) {
