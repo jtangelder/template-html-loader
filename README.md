@@ -10,7 +10,8 @@ the template engine by the file extension. You can overwrite this by setting the
 ````js
 loaders: [
   { test: /\.jade/, loader: "template-html-loader" },
-  { test: /\.ejs/, loader: "template-html-loader" }
+  { test: /\.pug/, loader: "template-html-loader" },
+  { test: /\.ejs/, loader: "template-html-loader" },
   { test: /\.mustache/, loader: "template-html-loader?engine=hogan" }
 ]
 ````

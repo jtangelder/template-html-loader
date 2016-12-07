@@ -10,7 +10,7 @@
   "author": "Jorik Tangelder",
   "license": "MIT",
   "dependencies": {
-    "consolidate": "~0.14.0",
+    "consolidate": "~0.14.5",
     "loader-utils": "~0.2.1"
   }
 }
