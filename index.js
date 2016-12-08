@@ -13,7 +13,12 @@ module.exports = function(content) {
     if (opt.raw) {
       callback(null, content);
     } else {
-      callback(null, "module.exports = " + JSON.stringify(content));
+      content = "module.exports = " + JSON.stringify(content)
+      content = content.replace(
+        /__WEBPACK_TEMPLATE_HTML_LOADER__\(([^\)]+)\)/g,
+        '" + require("$1") + "'
+      )
+      callback(null, content);
     }
   }
 
@@ -28,6 +33,16 @@ module.exports = function(content) {
 
   // for relative includes
   opt.filename = this.resourcePath;
+  opt.require = function(path) {
+    this.addDependency(path)
+    // Adding the default !file! loader for requires without a loader specified.
+    // This will create links to assets (images, etc.) without a module.exports=
+    // prefix at the top of the asset file.
+    if (path.match(/^\-?\!/) === null) path = "!file!" + path
+    // Substituting a placeholder string for the require. This will be replaced
+    // with an actual call to the require function in the generated javascript
+    return "__WEBPACK_TEMPLATE_HTML_LOADER__("+path+")"
+  }.bind(this)
 
   cons[opt.engine].render(content, opt, function(err, html) {
     if(err) {
