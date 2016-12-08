@@ -1,6 +1,6 @@
 var cons = require('consolidate');
 var utils = require('loader-utils');
-var extname = require('path').extname;
+var path = require('path');
 
 
 module.exports = function(content) {
@@ -19,7 +19,7 @@ module.exports = function(content) {
 
   // with no engine given, use the file extension as engine
   if(!opt.engine) {
-    opt.engine = extname(this.request).substr(1).toLowerCase();
+    opt.engine = path.extname(this.request).substr(1).toLowerCase();
   }
 
   if(!cons[opt.engine]) {
@@ -28,6 +28,7 @@ module.exports = function(content) {
 
   // for relative includes
   opt.filename = this.resourcePath;
+  opt.dirname = path.dirname(this.resourcePath);
 
   cons[opt.engine].render(content, opt, function(err, html) {
     if(err) {
