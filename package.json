@@ -12,7 +12,7 @@
   "dependencies": {
     "loader-utils": "~0.2.1"
   },
-  "peerDependencies" {  
+  "peerDependencies": {  
     "consolidate": "^0.14.0"
   }
 }
