@@ -1,6 +1,6 @@
 {
   "name": "template-html-loader",
-  "version": "0.0.3",
+  "version": "0.0.4",
   "description": "Parse templates to html - loader for webpack",
   "main": "index.js",
   "repository": {
