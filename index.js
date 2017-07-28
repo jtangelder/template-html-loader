@@ -1,6 +1,7 @@
 var cons = require('consolidate');
 var utils = require('loader-utils');
-var extname = require('path').extname;
+var path = require('path');
+var fs = require('fs');
 
 
 module.exports = function(content) {
@@ -19,7 +20,7 @@ module.exports = function(content) {
 
   // with no engine given, use the file extension as engine
   if(!opt.engine) {
-    opt.engine = extname(this.request).substr(1).toLowerCase();
+    opt.engine = path.extname(this.request).substr(1).toLowerCase();
   }
 
   if(!cons[opt.engine]) {
@@ -28,6 +29,17 @@ module.exports = function(content) {
 
   // for relative includes
   opt.filename = this.resourcePath;
+  opt.dirname = path.dirname(this.resourcePath);
+
+  if(opt.file) {
+    opt.file = path.join(opt.dirname, opt.file + '.json');
+    if(!fs.existsSync(opt.file)) {
+      throw new Error("Data file '"+ opt.file +"' does not exist");
+    }
+
+    opt = Object.assign(require(opt.file), opt);
+    delete opt.file;
+  }
 
   cons[opt.engine].render(content, opt, function(err, html) {
     if(err) {
