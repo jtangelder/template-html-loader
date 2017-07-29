@@ -31,13 +31,14 @@ module.exports = function(content) {
   opt.filename = this.resourcePath;
   opt.dirname = path.dirname(this.resourcePath);
 
-  if(opt.file) {
-    const file = path.join(opt.dirname, opt.file + '.json');
-    if(!fs.existsSync(file)) {
-      throw new Error("Data file '"+ file +"' does not exist");
-    }
-
-    opt = Object.assign(require(file), opt);    // ensure that opt takes precedence
+  if(opt.files instanceof Array) {
+    opt.files.forEach(function(file) {
+      file = path.join(opt.dirname, file + '.json');
+      if(!fs.existsSync(file)) {
+        throw new Error("Data file '"+ file +"' does not exist");
+      }
+      opt = Object.assign(require(file), opt);    // ensure that opt takes precedence
+    })
     delete opt.file;
   }
 
