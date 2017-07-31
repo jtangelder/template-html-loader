@@ -32,7 +32,7 @@ module.exports = function(content) {
   opt.dirname = path.dirname(this.resourcePath);
 
   if(opt.files instanceof Array) {
-    opt.files.forEach(function(file) {
+    opt.files.reverse().forEach(function(file) {
       file = path.join(opt.dirname, file + '.json');
       if(!fs.existsSync(file)) {
         throw new Error("Data file '"+ file +"' does not exist");
