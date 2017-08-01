@@ -31,15 +31,17 @@ module.exports = function(content) {
   opt.filename = this.resourcePath;
   opt.dirname = path.dirname(this.resourcePath);
 
+  const self = this;
   if(opt.files instanceof Array) {
     opt.files.reverse().forEach(function(file) {
-      file = path.join(opt.dirname, file + '.json');
+      var file = path.join(opt.dirname, file + '.json');
       if(!fs.existsSync(file)) {
         throw new Error("Data file '"+ file +"' does not exist");
       }
-      opt = Object.assign(require(file), opt);    // ensure that opt takes precedence
+      opt = Object.assign(JSON.parse(fs.readFileSync(file)), opt);    // ensure that opt takes precedence
+      self.addDependency(file);
     })
-    delete opt.file;
+    delete opt.files;
   }
 
   cons[opt.engine].render(content, opt, function(err, html) {
