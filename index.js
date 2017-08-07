@@ -34,9 +34,12 @@ module.exports = function(content) {
   const self = this;
   if(opt.files instanceof Array) {
     opt.files.reverse().forEach(function(file) {
-      var file = path.join(opt.dirname, file + '.json');
+      var file = path.join(opt.dirname, file);
       if(!fs.existsSync(file)) {
-        throw new Error("Data file '"+ file +"' does not exist");
+        file += '.json';
+        if(!fs.existsSync(file)) {
+          throw new Error("Data file '"+ file +"' does not exist");
+        }
       }
       opt = Object.assign(JSON.parse(fs.readFileSync(file)), opt);    // ensure that opt takes precedence
       self.addDependency(file);
