@@ -32,9 +32,9 @@ module.exports = function(content) {
   opt.dirname = path.dirname(this.resourcePath);
 
   const self = this;
-  if(opt.files instanceof Array) {
-    opt.files.reverse().forEach(function(file) {
-      var file = path.join(opt.dirname, file);
+  if(opt.dataFiles instanceof Array) {
+    opt.dataFiles.reverse().forEach(function(file) {
+      file = path.join(opt.dirname, file);
       if(!fs.existsSync(file)) {
         file += '.json';
         if(!fs.existsSync(file)) {
@@ -44,7 +44,20 @@ module.exports = function(content) {
       opt = Object.assign(JSON.parse(fs.readFileSync(file)), opt);    // ensure that opt takes precedence
       self.addDependency(file);
     })
-    delete opt.files;
+    delete opt.dataFiles;
+  }
+
+  if(opt.partialsFiles instanceof Object) {
+    Object.keys(opt.partialsFiles).forEach(function(key) {
+      var file = path.join(opt.dirname, opt.partialsFiles[key]);
+      if(!fs.existsSync(file)) {
+        throw new Error("Partials file '"+ file +"' does not exist");
+      }
+      opt.partials = opt.partials || {};
+      opt.partials[key] = fs.readFileSync(file).toString();
+      self.addDependency(file);
+    })
+    delete opt.extraFiles;
   }
 
   cons[opt.engine].render(content, opt, function(err, html) {
