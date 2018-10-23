@@ -1,13 +1,13 @@
-const cons = require('consolidate'),
-      utils = require('loader-utils'),
-      path = require('path'),
-      fs = require('fs');
+var cons = require('consolidate');
+var utils = require('loader-utils');
+var path = require('path');
+var fs = require('fs');
 
 
 module.exports = function(content) {
   this.cacheable && this.cacheable();
 
-  const callback = this.async();
+  var callback = this.async();
   var opt = utils.getOptions(this);
 
   function exportContent(content) {
