@@ -35,7 +35,7 @@ module.exports = function(content) {
   if(opt.dataFiles instanceof Array) {
     opt.dataFiles.reverse().forEach(function(file) {
       file = path.join(opt.dirname, file);
-      if(!fs.existsSync(file)) {
+      if(!fs.existsSync(file)) {  // if the given name doesn't exist, check if it needs an extension
         file += '.json';
         if(!fs.existsSync(file)) {
           throw new Error("Data file '"+ file +"' does not exist");
