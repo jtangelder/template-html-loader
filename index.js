@@ -1,13 +1,14 @@
 var cons = require('consolidate');
 var utils = require('loader-utils');
-var extname = require('path').extname;
+var path = require('path');
+var fs = require('fs');
 
 
 module.exports = function(content) {
   this.cacheable && this.cacheable();
 
   var callback = this.async();
-  var opt = utils.parseQuery(this.query);
+  var opt = utils.getOptions(this);
 
   function exportContent(content) {
     if (opt.raw) {
@@ -19,7 +20,7 @@ module.exports = function(content) {
 
   // with no engine given, use the file extension as engine
   if(!opt.engine) {
-    opt.engine = extname(this.request).substr(1).toLowerCase();
+    opt.engine = path.extname(this.request).substr(1).toLowerCase();
   }
 
   if(!cons[opt.engine]) {
@@ -28,6 +29,36 @@ module.exports = function(content) {
 
   // for relative includes
   opt.filename = this.resourcePath;
+  opt.dirname = path.dirname(this.resourcePath);
+
+  const self = this;
+  if(opt.dataFiles instanceof Array) {
+    opt.dataFiles.reverse().forEach(function(file) {
+      file = path.join(opt.dirname, file);
+      if(!fs.existsSync(file)) {  // if the given name doesn't exist, check if it needs an extension
+        file += '.json';
+        if(!fs.existsSync(file)) {
+          throw new Error("Data file '"+ file +"' does not exist");
+        }
+      }
+      opt = Object.assign(JSON.parse(fs.readFileSync(file)), opt);    // ensure that opt takes precedence
+      self.addDependency(file);
+    })
+    delete opt.dataFiles;
+  }
+
+  if(opt.partialsFiles instanceof Object) {
+    Object.keys(opt.partialsFiles).forEach(function(key) {
+      var file = path.join(opt.dirname, opt.partialsFiles[key]);
+      if(!fs.existsSync(file)) {
+        throw new Error("Partials file '"+ file +"' does not exist");
+      }
+      opt.partials = opt.partials || {};
+      opt.partials[key] = fs.readFileSync(file).toString();
+      self.addDependency(file);
+    })
+    delete opt.extraFiles;
+  }
 
   cons[opt.engine].render(content, opt, function(err, html) {
     if(err) {
